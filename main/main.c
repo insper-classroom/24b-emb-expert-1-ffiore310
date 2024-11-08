@@ -30,6 +30,19 @@ typedef struct adc {
     int val;
 } adc_t;
 
+void ldr_task(void *p) {
+    adc_init();
+    adc_gpio_init(28);
+
+    while (1) {
+
+        adc_select_input(2);
+        float result = adc_read();
+        printf("LDR: %f\n", result);
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
 void servo_task(void *p) {
     adc_t data;
   
@@ -123,6 +136,7 @@ int main() {
     xTaskCreate(servo_task, "servo_task", 4096, NULL, 1, NULL);
     xTaskCreate(x_task, "x_task", 4096, NULL, 1, NULL);
     xTaskCreate(y_task, "y_task", 4096, NULL, 1, NULL);
+    xTaskCreate(ldr_task, "ldr_task", 4096, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
